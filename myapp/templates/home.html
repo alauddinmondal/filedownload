@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Download</title>
+</head>
+<body>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" id="uploadafile">
+        <button type="submit" name="uploadafile">Upload</button>
+    </form>
+    <a href="{{ fileurl }}">{{filename}}</a>
+    <button onclick='downloaD("{{ fileurl }}","{{filename}}")'>Download</button>
+
+    <script>
+        function downloaD(url, name){
+            fetch(url).then(async (res)=>{
+                const dfile = await res.blob();
+                var blobURL = window.URL && window.URL.createObjectURL?window.URL.createObjectURL(dfile):window.webkitURL.createObjectURL(dfile)
+                var templink = document.createElement("a");
+                templink.style.display = "none";
+                templink.href = blobURL;
+                templink.setAttribute("download",name);
+                if(typeof templink.download==="undefined"){
+                    templink.setAttribute("target","_blank")
+                }
+                document.body.appendChild(templink);
+                templink.click();
+
+                setTimeout(function(){
+                    document.body.removeChild(templink);
+                    window.URL.revokeObjectURL(blobURL);
+                },200)
+            })
+        }
+    </script>
+</body>
+</html>
